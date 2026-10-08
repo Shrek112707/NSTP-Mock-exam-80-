@@ -14,8 +14,9 @@
         label { cursor: pointer; display: block; }
         input[type="text"] { width: 80%; padding: 8px; margin-top: 5px; font-size: 14px; }
         button { padding: 12px 20px; border: 1px solid #000; background: #fff; cursor: pointer; font-size: 16px; margin-right: 10px; margin-bottom: 10px; }
+        .controls { position: sticky; bottom: 0; background: white; padding: 15px 0; border-top: 2px solid #eee; margin-top: 20px; }
         .feedback { font-weight: bold; margin-left: 10px; font-size: 16px; }
-        #result { margin-top: 20px; font-weight: bold; font-size: 20px; }
+        #result { margin-top: 10px; font-weight: bold; font-size: 20px; }
     </style>
 </head>
 <body>
@@ -23,9 +24,13 @@
 <div class="container">
     <h1>NSTP Mock Up Quiz</h1>
     <div id="quiz-container"></div>
-    <button onclick="submitQuiz()">Submit Answers</button>
-    <button id="reveal-btn" onclick="revealAnswers()" style="display:none;">Reveal Answers</button>
-    <div id="result"></div>
+    
+    <div class="controls">
+        <button onclick="submitQuiz()">Submit Answers</button>
+        <button id="reveal-btn" onclick="revealAnswers()" style="display:none;">Reveal Answers</button>
+        <button onclick="reshuffleQuiz()">Reshuffle Questions</button>
+        <div id="result"></div>
+    </div>
 </div>
 
 <script>
@@ -100,12 +105,12 @@
         else if (qNum === 68) { return { q: "A fixed tax charged to every individual regardless of income is a...", options: ["Income tax", "Poll tax", "Value-added tax", "Property tax"], a: 1 }; }
         else if (qNum === 69) { return { q: "A law that makes an act criminal retroactively even if it was not a crime when committed is an...", options: ["Ex post facto law", "Bill of attainder", "Ordinance", "Eminent domain"], a: 0 }; }
         else if (qNum === 70) { return { q: "What is a legislative act that directly declares a person guilty of a crime and imposes punishment without trial?", options: ["Bill of Rights", "Bill of Attainder", "Writ of Habeas Corpus", "Subpoena"], a: 1 }; }
-        else if (qNum === 71) { return { q: "What body was created to draft the 1987 Philippine Constitution?", options: ["Constitutional Commission", "Philippine Commission", "Constitutional Assembly", "Congress of the Philippines"], a: 0 }; }
-        else if (qNum === 72) { return { q: "Who appointed the members of the Constitutional Commission of 1986?", options: ["Ferdinand Marcos", "Corazon Aquino", "Fidel V. Ramos", "The Supreme Court"], a: 1 }; }
-        else if (qNum === 73) { return { q: "Under Section 21 of the Bill of Rights, no person shall be twice put in jeopardy of punishment for the same...", options: ["Offense", "Debt", "Contract", "Tax"], a: 0 }; }
-        else if (qNum === 74) { return { q: "On what date was the 1987 Constitution overwhelmingly ratified by the Filipino people in a plebiscite?", options: ["June 12, 1986", "February 2, 1987", "July 4, 1987", "August 21, 1987"], a: 1 }; }
-        else if (qNum === 75) { return { q: "Before the 1987 Constitution, what temporary constitution was established by President Corazon Aquino?", options: ["The Malolos Constitution", "The 1973 Constitution", "The Freedom Constitution", "The Commonwealth Constitution"], a: 2 }; }
-        else if (qNum === 76) { return { q: "When was the final draft of the 1987 Constitution finished and approved by the Commission?", options: ["October 12, 1986", "December 25, 1986", "January 1, 1987", "February 2, 1987"], a: 0 }; }
+        else if (qNum === 71) { return { q: "What is another name for a poll tax?", options: ["Value-added tax", "Capitation or head tax", "Income tax", "Excise tax"], a: 1 }; }
+        else if (qNum === 72) { return { q: "Which of the following is a stated importance of having a poll tax or cedula?", options: ["It serves as a proof of residence", "It increases individual wealth", "It replaces income tax", "It allows a person to travel abroad without a passport"], a: 0 }; }
+        else if (qNum === 73) { return { q: "Which of the following is an example of a heinous crime characterized by excessive cruelty or brutality?", options: ["Parricide", "Vandalism", "Simple Theft", "Trespassing"], a: 0 }; }
+        else if (qNum === 74) { return { q: "According to the steps in the observance of due process, what is the first step when the government exercises Eminent Domain?", options: ["Court determination", "Notice and hearing", "Filing of an expropriation case", "Payment of just compensation"], a: 2 }; }
+        else if (qNum === 75) { return { q: "A search warrant must be issued in connection with how many specific offenses?", options: ["Only one crime", "Two related crimes", "Up to three crimes", "Any number of suspected crimes"], a: 0 }; }
+        else if (qNum === 76) { return { q: "What does the Latin phrase 'Ex post facto' literally mean?", options: ["Before the fact", "After the fact", "In the act", "Out of the law"], a: 1 }; }
         else if (qNum === 77) { return { q: "How many Articles are there in the 1987 Philippine Constitution?", options: ["15", "18", "21", "25"], a: 1 }; }
         
         // Identification Questions
@@ -116,38 +121,66 @@
         return null;
     }
 
-    let quizContainer = document.getElementById('quiz-container');
-
+    let questionOrder = [];
     for (let i = 1; i <= 80; i++) {
-        let qData = getQuestionData(i);
-        if (qData) {
-            let qHTML = `<div class="question-box">`;
-            qHTML += `<div class="question">${i}. ${qData.q} <span id="mark${i}" class="feedback"></span></div>`;
-            
-            if (qData.options) {
-                let optionsHTML = `<ul class="options">`;
-                for(let j = 0; j < qData.options.length; j++) {
-                    optionsHTML += `
-                        <li>
-                            <label>
-                                <input type="radio" name="q${i}" id="q${i}-opt${j}" value="${j}">
-                                ${qData.options[j]}
-                                <span id="reveal-q${i}-opt${j}" class="feedback"></span>
-                            </label>
-                        </li>
-                    `;
-                }
-                optionsHTML += `</ul>`;
-                qHTML += optionsHTML;
-                qHTML += `<input type="hidden" id="a${i}" value="${qData.a}">`;
-            } else if (qData.type === "ident") {
-                qHTML += `<input type="text" id="q${i}-text" placeholder="Type your answer here">`;
-                qHTML += `<span id="reveal-q${i}-text" class="feedback" style="display:none;"></span>`;
-            }
-            
-            qHTML += `</div>`;
-            quizContainer.innerHTML += qHTML;
+        questionOrder.push(i);
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
+    }
+
+    function renderQuiz() {
+        let quizContainer = document.getElementById('quiz-container');
+        quizContainer.innerHTML = '';
+        
+        for (let i = 0; i < questionOrder.length; i++) {
+            let qNum = questionOrder[i];
+            let displayNum = i + 1;
+            let qData = getQuestionData(qNum);
+            
+            if (qData) {
+                let qHTML = `<div class="question-box">`;
+                qHTML += `<div class="question">${displayNum}. ${qData.q} <span id="mark${qNum}" class="feedback"></span></div>`;
+                
+                if (qData.options) {
+                    let optionsHTML = `<ul class="options">`;
+                    for(let j = 0; j < qData.options.length; j++) {
+                        optionsHTML += `
+                            <li>
+                                <label>
+                                    <input type="radio" name="q${qNum}" id="q${qNum}-opt${j}" value="${j}">
+                                    ${qData.options[j]}
+                                    <span id="reveal-q${qNum}-opt${j}" class="feedback"></span>
+                                </label>
+                            </li>
+                        `;
+                    }
+                    optionsHTML += `</ul>`;
+                    qHTML += optionsHTML;
+                    qHTML += `<input type="hidden" id="a${qNum}" value="${qData.a}">`;
+                } else if (qData.type === "ident") {
+                    qHTML += `<input type="text" id="q${qNum}-text" placeholder="Type your answer here">`;
+                    qHTML += `<span id="reveal-q${qNum}-text" class="feedback" style="display:none;"></span>`;
+                }
+                
+                qHTML += `</div>`;
+                quizContainer.innerHTML += qHTML;
+            }
+        }
+
+        // Reset UI elements when rendered/reshuffled
+        document.getElementById('result').innerText = '';
+        document.getElementById('reveal-btn').style.display = 'none';
+    }
+
+    function reshuffleQuiz() {
+        shuffleArray(questionOrder);
+        renderQuiz();
+        window.scrollTo(0, 0);
     }
 
     function submitQuiz() {
@@ -214,6 +247,9 @@
             }
         }
     }
+
+    // Initialize the quiz on page load
+    renderQuiz();
 </script>
 
 </body>
