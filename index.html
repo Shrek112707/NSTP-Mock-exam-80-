@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constitution Quiz</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .question-box { margin-bottom: 20px; padding: 15px; border: 1px solid #000; }
+        .question { font-weight: bold; margin-bottom: 10px; font-size: 16px; }
+        .options { list-style-type: none; padding: 0; }
+        .options li { margin-bottom: 8px; }
+        label { cursor: pointer; display: block; }
+        input[type="text"] { width: 80%; padding: 8px; margin-top: 5px; font-size: 14px; }
+        button { padding: 12px 20px; border: 1px solid #000; background: #fff; cursor: pointer; font-size: 16px; margin-right: 10px; margin-bottom: 10px; }
+        .feedback { font-weight: bold; margin-left: 10px; font-size: 16px; }
+        #result { margin-top: 20px; font-weight: bold; font-size: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>NSTP Mock Up Quiz</h1>
+    <div id="quiz-container"></div>
+    <button onclick="submitQuiz()">Submit Answers</button>
+    <button id="reveal-btn" onclick="revealAnswers()" style="display:none;">Reveal Answers</button>
+    <div id="result"></div>
+</div>
+
+<script>
+    function getQuestionData(qNum) {
+        if (qNum === 1) { return { q: "Service-Learning is defined as the act of helping or providing assistance for...", options: ["Yourself", "Another person or a group of people", "The government", "Private businesses"], a: 1 }; }
+        else if (qNum === 2) { return { q: "Service-Learning combines community service and...", options: ["Experiential learning", "Financial gain", "Physical exercise", "Strict memorization"], a: 0 }; }
+        else if (qNum === 3) { return { q: "In Service Learning, a student provides service through knowledge, skills, and...", options: ["Values", "Money", "Equipment", "Time"], a: 0 }; }
+        else if (qNum === 4) { return { q: "The community gives experience to students by enhancing...", options: ["Grades", "Knowledge", "Wealth", "Popularity"], a: 1 }; }
+        else if (qNum === 5) { return { q: "Constitution refers to the body of rules and principles where the powers of sovereignty are...", options: ["Ignored", "Occasionally used", "Regularly exercised", "Delegated randomly"], a: 2 }; }
+        else if (qNum === 6) { return { q: "Sovereignty means supreme power or...", options: ["Authority", "Wealth", "Property", "Military"], a: 0 }; }
+        else if (qNum === 7) { return { q: "The Philippine Constitution is what kind of instrument?", options: ["Unwritten", "Temporary", "Written", "Verbal"], a: 2 }; }
+        else if (qNum === 8) { return { q: "By the Constitution, fundamental powers of the government are established, limited, and...", options: ["Defined", "Hidden", "Sold", "Removed"], a: 0 }; }
+        else if (qNum === 9) { return { q: "Powers are distributed among several departments for the benefit of...", options: ["The President", "The politicians", "The judges", "The people"], a: 3 }; }
+        else if (qNum === 10) { return { q: "The Constitution is known as the supreme law of the...", options: ["Land", "Government", "Courts", "Universe"], a: 0 }; }
+        else if (qNum === 11) { return { q: "Which Article of the 1987 Constitution covers the National Territory?", options: ["Article I", "Article II", "Article III", "Article IV"], a: 0 }; }
+        else if (qNum === 12) { return { q: "Which Article covers the Declaration of Principles and State Policies?", options: ["Article I", "Article II", "Article V", "Article VI"], a: 1 }; }
+        else if (qNum === 13) { return { q: "What is Article III about?", options: ["Citizenship", "Bill of Rights", "Suffrage", "Executive Department"], a: 1 }; }
+        else if (qNum === 14) { return { q: "Which Article covers Citizenship?", options: ["Article II", "Article III", "Article IV", "Article V"], a: 2 }; }
+        else if (qNum === 15) { return { q: "Which Article covers Suffrage?", options: ["Article III", "Article IV", "Article V", "Article VI"], a: 2 }; }
+        else if (qNum === 16) { return { q: "Which Article covers the Legislative Department?", options: ["Article V", "Article VI", "Article VII", "Article VIII"], a: 1 }; }
+        else if (qNum === 17) { return { q: "Which Article covers the Executive Department?", options: ["Article VI", "Article VII", "Article VIII", "Article IX"], a: 1 }; }
+        else if (qNum === 18) { return { q: "Which Article covers the Judicial Department?", options: ["Article VII", "Article VIII", "Article IX", "Article X"], a: 1 }; }
+        else if (qNum === 19) { return { q: "Which Article covers Constitutional Commissions?", options: ["Article VIII", "Article IX", "Article X", "Article XI"], a: 1 }; }
+        else if (qNum === 20) { return { q: "Which Article covers Local Government?", options: ["Article IX", "Article X", "Article XI", "Article XII"], a: 1 }; }
+        else if (qNum === 21) { return { q: "Which Article covers Accountability of Public Officers?", options: ["Article X", "Article XI", "Article XII", "Article XIII"], a: 1 }; }
+        else if (qNum === 22) { return { q: "Which Article covers National Economy and Patrimony?", options: ["Article XI", "Article XII", "Article XIII", "Article XIV"], a: 1 }; }
+        else if (qNum === 23) { return { q: "Which Article covers Social Justice and Human Rights?", options: ["Article XII", "Article XIII", "Article XIV", "Article XV"], a: 1 }; }
+        else if (qNum === 24) { return { q: "Which Article covers Education, Science and Technology, Arts, Culture and Sports?", options: ["Article XIII", "Article XIV", "Article XV", "Article XVI"], a: 1 }; }
+        else if (qNum === 25) { return { q: "Which Article covers The Family?", options: ["Article XIV", "Article XV", "Article XVI", "Article XVII"], a: 1 }; }
+        else if (qNum === 26) { return { q: "Which Article covers General Provisions?", options: ["Article XV", "Article XVI", "Article XVII", "Article XVIII"], a: 1 }; }
+        else if (qNum === 27) { return { q: "Which Article covers Amendments or Revisions?", options: ["Article XVI", "Article XVII", "Article XVIII", "Article I"], a: 1 }; }
+        else if (qNum === 28) { return { q: "Which Article covers Transitory Provisions?", options: ["Article XVII", "Article XVIII", "Article I", "Article II"], a: 1 }; }
+        else if (qNum === 29) { return { q: "What principle distributes powers among the branches?", options: ["Checks and balances", "Separation of powers", "Eminent Domain", "Due Process"], a: 1 }; }
+        else if (qNum === 30) { return { q: "How many branches of government are there?", options: ["2", "3", "4", "5"], a: 1 }; }
+        else if (qNum === 31) { return { q: "What system allows a department to limit, monitor, or block actions by other branches?", options: ["Separation of powers", "Judicial review", "Checks and balances", "Executive privilege"], a: 2 }; }
+        else if (qNum === 32) { return { q: "The word Preamble is derived from which Latin word?", options: ["Preambulo", "Preambulare", "Praeceptum", "Praeamble"], a: 1 }; }
+        else if (qNum === 33) { return { q: "What does 'preambulare' mean?", options: ["To walk after", "To walk before", "To stand firm", "To speak first"], a: 1 }; }
+        else if (qNum === 34) { return { q: "A preamble is defined as an introduction or a preliminary...", options: ["Statement", "Rule", "Law", "Penalty"], a: 0 }; }
+        else if (qNum === 35) { return { q: "Who implores the aid of Almighty God in the Preamble?", options: ["The President", "The Congress", "The sovereign Filipino people", "The Supreme Court"], a: 2 }; }
+        else if (qNum === 36) { return { q: "A national aim in adopting the Constitution is to build a just and humane...", options: ["Government", "Economy", "Society", "World"], a: 2 }; }
+        else if (qNum === 37) { return { q: "What term refers to the country's heritage and resources passed from one generation to another?", options: ["Patrimony", "Posterity", "Sovereignty", "Territory"], a: 0 }; }
+        else if (qNum === 38) { return { q: "What term in the Preamble refers to future generations?", options: ["Patrimony", "Posterity", "Ancestry", "Citizens"], a: 1 }; }
+        else if (qNum === 39) { return { q: "What is defined as a declaration and enumeration of a person's rights and privileges?", options: ["Preamble", "Bill of Rights", "Statute", "Ordinance"], a: 1 }; }
+        else if (qNum === 40) { return { q: "The Bill of Rights is designed to protect against violations by the...", options: ["Government", "Weather", "Economy", "Foreign countries only"], a: 0 }; }
+        else if (qNum === 41) { return { q: "Rights possessed by every citizen given to man by God are called...", options: ["Constitutional Rights", "Statutory Rights", "Natural Rights", "Civil Rights"], a: 2 }; }
+        else if (qNum === 42) { return { q: "Which of the following is a key characteristic of Natural Rights?", options: ["Inherent", "Revocable", "Temporary", "Granted by law"], a: 0 }; }
+        else if (qNum === 43) { return { q: "Which is another key characteristic of Natural Rights?", options: ["Local", "Universal", "Conditional", "Written"], a: 1 }; }
+        else if (qNum === 44) { return { q: "What rights are conferred and protected by the Constitution?", options: ["Natural Rights", "Statutory Rights", "Constitutional Rights", "Divine Rights"], a: 2 }; }
+        else if (qNum === 45) { return { q: "What rights are provided by laws promulgated by the law-making body?", options: ["Constitutional Rights", "Natural Rights", "Statutory Rights", "Inherent Rights"], a: 2 }; }
+        else if (qNum === 46) { return { q: "Statutory rights may be abolished by the...", options: ["President", "Supreme Court", "Same law-making body", "Citizens"], a: 2 }; }
+        else if (qNum === 47) { return { q: "An 'In flagrante delicto' arrest means the person is...", options: ["Caught in the act", "Suspected based on rumors", "Acquitted", "Pardoned"], a: 0 }; }
+        else if (qNum === 48) { return { q: "A hot pursuit arrest requires the officer to have personal...", options: ["Knowledge of facts", "Vendetta", "Opinion", "Financial stake"], a: 0 }; }
+        else if (qNum === 49) { return { q: "Escapee arrest is for someone who escaped from a...", options: ["School", "Job", "Detention facility", "Hospital"], a: 2 }; }
+        else if (qNum === 50) { return { q: "A search incidental to a lawful arrest allows police to search the immediate area for weapons or...", options: ["Food", "Evidence", "Clothing", "Money"], a: 1 }; }
+        else if (qNum === 51) { return { q: "If an officer lawfully in a place sees evidence of a crime in plain sight, it falls under the...", options: ["Stop-and-frisk", "Plain view doctrine", "Consent search", "Hot pursuit"], a: 1 }; }
+        else if (qNum === 52) { return { q: "When a person voluntarily agrees to a search, it is known as a...", options: ["Forced search", "Consent search", "Plain view search", "Emergency search"], a: 1 }; }
+        else if (qNum === 53) { return { q: "Observing unusual conduct that suggests a person may be armed justifies a...", options: ["Consent search", "Hot pursuit", "Stop-and-frisk", "Customs search"], a: 2 }; }
+        else if (qNum === 54) { return { q: "The moving vehicle rule falls under what search circumstance?", options: ["Stop-and-frisk", "Exigent and emergency", "Consent search", "Plain view"], a: 1 }; }
+        else if (qNum === 55) { return { q: "Searches at borders and checkpoints are conducted to protect public...", options: ["Safety", "Wealth", "Morals", "Opinion"], a: 0 }; }
+        else if (qNum === 56) { return { q: "Warrantless arrests and searches are generally...", options: ["Encouraged", "Prohibited", "Required", "Unlimited"], a: 1 }; }
+        else if (qNum === 57) { return { q: "A warrant of arrest must strictly contain the signature of the...", options: ["Police officer", "Prosecutor", "Judge", "Mayor"], a: 2 }; }
+        else if (qNum === 58) { return { q: "Probable cause is based on the personal evaluation of the...", options: ["Complainant", "Judge", "Police", "Witness"], a: 1 }; }
+        else if (qNum === 59) { return { q: "In a warrant of arrest, if the real name is unknown, what must be given?", options: ["A fictitious name with a clear description", "A blank space", "The officer's name", "Any random name"], a: 0 }; }
+        else if (qNum === 60) { return { q: "A warrant must command peace officers to arrest the person and bring them before the...", options: ["Police station", "Mayor's office", "Court", "Jail directly"], a: 2 }; }
+        else if (qNum === 61) { return { q: "A search warrant must clearly describe the particular...", options: ["Place", "Law", "Punishment", "Officer"], a: 0 }; }
+        else if (qNum === 62) { return { q: "A search warrant must clearly specify the particular...", options: ["Items to be seized", "Person to be arrested", "Fine to be paid", "Time of day"], a: 0 }; }
+        else if (qNum === 63) { return { q: "Eminent Domain is the power to take private property for...", options: ["Personal use", "Public use", "Corporate use", "No reason"], a: 1 }; }
+        else if (qNum === 64) { return { q: "Eminent Domain requires the payment of just...", options: ["Taxes", "Compensation", "Penalties", "Interest"], a: 1 }; }
+        else if (qNum === 65) { return { q: "What order commands that a detained person be brought before a court to determine if imprisonment is lawful?", options: ["Writ of Amparo", "Writ of Habeas Corpus", "Writ of Mandamus", "Subpoena"], a: 1 }; }
+        else if (qNum === 66) { return { q: "Under Section 19, any death penalty already imposed shall be reduced to...", options: ["Life imprisonment", "Reclusion temporal", "Reclusion perpetua", "Prision mayor"], a: 2 }; }
+        else if (qNum === 67) { return { q: "Reclusion Perpetua corresponds to imprisonment for how many years?", options: ["10-20 years", "20-40 years", "Life without parole", "1-5 years"], a: 1 }; }
+        else if (qNum === 68) { return { q: "A fixed tax charged to every individual regardless of income is a...", options: ["Income tax", "Poll tax", "Value-added tax", "Property tax"], a: 1 }; }
+        else if (qNum === 69) { return { q: "A law that makes an act criminal retroactively even if it was not a crime when committed is an...", options: ["Ex post facto law", "Bill of attainder", "Ordinance", "Eminent domain"], a: 0 }; }
+        
+        // Added Custom/Historical Questions
+        else if (qNum === 70) { return { q: "What is a legislative act that directly declares a person guilty of a crime and imposes punishment without trial?", options: ["Bill of Rights", "Bill of Attainder", "Writ of Habeas Corpus", "Subpoena"], a: 1 }; }
+        else if (qNum === 71) { return { q: "What body was created to draft the 1987 Philippine Constitution?", options: ["Constitutional Commission", "Philippine Commission", "Constitutional Assembly", "Congress of the Philippines"], a: 0 }; }
+        else if (qNum === 72) { return { q: "Who appointed the members of the Constitutional Commission of 1986?", options: ["Ferdinand Marcos", "Corazon Aquino", "Fidel V. Ramos", "The Supreme Court"], a: 1 }; }
+        else if (qNum === 73) { return { q: "Who served as the President of the 1986 Constitutional Commission?", options: ["Claro M. Recto", "Jose P. Laurel", "Cecilia Muñoz-Palma", "Hilario Davide Jr."], a: 2 }; }
+        else if (qNum === 74) { return { q: "On what date was the 1987 Constitution overwhelmingly ratified by the Filipino people in a plebiscite?", options: ["June 12, 1986", "February 2, 1987", "July 4, 1987", "August 21, 1987"], a: 1 }; }
+        else if (qNum === 75) { return { q: "Before the 1987 Constitution, what temporary constitution was established by President Corazon Aquino?", options: ["The Malolos Constitution", "The 1973 Constitution", "The Freedom Constitution", "The Commonwealth Constitution"], a: 2 }; }
+        else if (qNum === 76) { return { q: "When was the final draft of the 1987 Constitution finished and approved by the Commission?", options: ["October 12, 1986", "December 25, 1986", "January 1, 1987", "February 2, 1987"], a: 0 }; }
+        else if (qNum === 77) { return { q: "How many Articles are there in the 1987 Philippine Constitution?", options: ["15", "18", "21", "25"], a: 1 }; }
+        
+        // Identification Questions
+        else if (qNum === 78) { return { type: "ident", q: "Identify the 3 Branches of the Government established by the Constitution.", a: "executive, legislative, judicial" }; }
+        else if (qNum === 79) { return { type: "ident", q: "What Latin word means 'to walk before' from which the Preamble is derived?", a: "preambulare" }; }
+        else if (qNum === 80) { return { type: "ident", q: "What term refers to the country's heritage and resources passed from one generation to another?", a: "patrimony" }; }
+        
+        return null;
+    }
+
+    let quizContainer = document.getElementById('quiz-container');
+
+    for (let i = 1; i <= 80; i++) {
+        let qData = getQuestionData(i);
+        if (qData) {
+            let qHTML = `<div class="question-box">`;
+            qHTML += `<div class="question">${i}. ${qData.q} <span id="mark${i}" class="feedback"></span></div>`;
+            
+            if (qData.options) {
+                let optionsHTML = `<ul class="options">`;
+                for(let j = 0; j < qData.options.length; j++) {
+                    optionsHTML += `
+                        <li>
+                            <label>
+                                <input type="radio" name="q${i}" id="q${i}-opt${j}" value="${j}">
+                                ${qData.options[j]}
+                                <span id="reveal-q${i}-opt${j}" class="feedback"></span>
+                            </label>
+                        </li>
+                    `;
+                }
+                optionsHTML += `</ul>`;
+                qHTML += optionsHTML;
+                qHTML += `<input type="hidden" id="a${i}" value="${qData.a}">`;
+            } else if (qData.type === "ident") {
+                qHTML += `<input type="text" id="q${i}-text" placeholder="Type your answer here">`;
+                qHTML += `<span id="reveal-q${i}-text" class="feedback" style="display:none;"></span>`;
+            }
+            
+            qHTML += `</div>`;
+            quizContainer.innerHTML += qHTML;
+        }
+    }
+
+    function submitQuiz() {
+        let score = 0;
+        
+        let radios = document.querySelectorAll('input[type="radio"]');
+        for (let i = 0; i < radios.length; i++) radios[i].disabled = true;
+        let textInputs = document.querySelectorAll('input[type="text"]');
+        for (let i = 0; i < textInputs.length; i++) textInputs[i].disabled = true;
+
+        for (let i = 1; i <= 80; i++) {
+            let qData = getQuestionData(i);
+            let mark = document.getElementById('mark' + i);
+            mark.innerText = "";
+
+            if (qData.options) {
+                let selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                let correctAnswerIndex = document.getElementById('a' + i).value;
+                if (selectedOption && selectedOption.value === correctAnswerIndex) {
+                    score++;
+                    mark.innerText = "✓";
+                } else {
+                    mark.innerText = "x";
+                }
+            } else if (qData.type === "ident") {
+                let userAnswer = document.getElementById(`q${i}-text`).value.toLowerCase().trim();
+                let isCorrect = false;
+                
+                if (i === 78) {
+                    if (userAnswer.includes("executive") && userAnswer.includes("legislative") && userAnswer.includes("judicial")) {
+                        isCorrect = true;
+                    }
+                } else {
+                    if (userAnswer === qData.a) {
+                        isCorrect = true;
+                    }
+                }
+
+                if (isCorrect) {
+                    score++;
+                    mark.innerText = "✓";
+                } else {
+                    mark.innerText = "x";
+                }
+            }
+        }
+        
+        document.getElementById('result').innerText = `Score: ${score} / 80`;
+        document.getElementById('reveal-btn').style.display = 'inline-block';
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function revealAnswers() {
+        for (let i = 1; i <= 80; i++) {
+            let qData = getQuestionData(i);
+            if (qData.options) {
+                let correctAnswerIndex = document.getElementById('a' + i).value;
+                let revealSpan = document.getElementById('reveal-q' + i + '-opt' + correctAnswerIndex);
+                revealSpan.innerText = "✓";
+            } else if (qData.type === "ident") {
+                let revealSpan = document.getElementById('reveal-q' + i + '-text');
+                revealSpan.style.display = "block";
+                revealSpan.innerText = "Answer: " + qData.a;
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
+</html>
